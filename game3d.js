@@ -2636,6 +2636,8 @@ function scoreGoal(goalSide) {
     // Afficher \"GOAL!\" au centre de l'écran
     const goalMsg = document.getElementById('goalMessage');
     if (goalMsg) {
+        // Réinitialiser le texte à "BUT !" pour éviter d'afficher l'ancien message de victoire
+        goalMsg.textContent = languageMode === 'fr' ? 'BUT !' : 'GOAL!';
         goalMsg.classList.add('visible');
         // Masquer le message après 1.5s
         setTimeout(() => {
@@ -3086,6 +3088,13 @@ function returnToLanding() {
     gameMode = 'match'; // Réinitialiser le mode
     updateMatchTimerDisplay(matchDurationMs);
     
+    // Réinitialiser le message de but
+    const goalMsg = document.getElementById('goalMessage');
+    if (goalMsg) {
+        goalMsg.textContent = languageMode === 'fr' ? 'BUT !' : 'GOAL!';
+        goalMsg.classList.remove('visible');
+    }
+    
     // Réafficher l'IA et le chrono pour le prochain match
     if (opponentCar) {
         opponentCar.visible = true;
@@ -3336,6 +3345,13 @@ function startMatch() {
     goalsScored = 0;
     updateScoreDisplay();
     
+    // Réinitialiser le message de but
+    const goalMsg = document.getElementById('goalMessage');
+    if (goalMsg) {
+        goalMsg.textContent = languageMode === 'fr' ? 'BUT !' : 'GOAL!';
+        goalMsg.classList.remove('visible');
+    }
+    
     // Initialiser le chrono de match (5 minutes)
     matchStartTime = Date.now();
     isMatchOver = false;
@@ -3433,6 +3449,13 @@ function startFreeplay() {
     opponentScore = 0;
     goalsScored = 0;
     updateScoreDisplay();
+    
+    // Réinitialiser le message de but
+    const goalMsg = document.getElementById('goalMessage');
+    if (goalMsg) {
+        goalMsg.textContent = languageMode === 'fr' ? 'BUT !' : 'GOAL!';
+        goalMsg.classList.remove('visible');
+    }
     
     // Pas de chrono en freeplay
     matchStartTime = null;
