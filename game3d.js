@@ -294,17 +294,21 @@ function initBackgroundMusic() {
     musicGainNode.connect(musicAudioContext.destination);
 }
 
-// Charger et jouer une musique aléatoire
-function playRandomMusic() {
+// Passer à la musique suivante dans la playlist
+function nextMusic() {
     if (!musicAudioContext || musicPlaylist.length === 0) return;
     
-    // Choisir une musique aléatoire (différente de la précédente)
-    let newIndex;
-    do {
-        newIndex = Math.floor(Math.random() * musicPlaylist.length);
-    } while (newIndex === currentMusicIndex && musicPlaylist.length > 1);
+    // Passer à la musique suivante dans l'ordre
+    currentMusicIndex = (currentMusicIndex + 1) % musicPlaylist.length;
+    loadAndPlayMusic(currentMusicIndex);
+}
+
+// Charger et jouer une musique spécifique par index
+function loadAndPlayMusic(index) {
+    if (!musicAudioContext || musicPlaylist.length === 0) return;
+    if (index < 0 || index >= musicPlaylist.length) return;
     
-    currentMusicIndex = newIndex;
+    currentMusicIndex = index;
     const music = musicPlaylist[currentMusicIndex];
     
     // Arrêter la musique précédente si elle existe
@@ -370,6 +374,19 @@ function playRandomMusic() {
     backgroundMusic.load();
 }
 
+// Charger et jouer une musique aléatoire
+function playRandomMusic() {
+    if (!musicAudioContext || musicPlaylist.length === 0) return;
+    
+    // Choisir une musique aléatoire (différente de la précédente)
+    let newIndex;
+    do {
+        newIndex = Math.floor(Math.random() * musicPlaylist.length);
+    } while (newIndex === currentMusicIndex && musicPlaylist.length > 1);
+    
+    loadAndPlayMusic(newIndex);
+}
+
 // Mettre à jour l'affichage de la musique
 function updateMusicDisplay(music) {
     const musicTitle = document.getElementById('hud-music-title');
@@ -405,6 +422,11 @@ function startBackgroundMusic() {
     // Reprendre le contexte audio si suspendu
     if (musicAudioContext && musicAudioContext.state === 'suspended') {
         musicAudioContext.resume();
+    }
+    
+    // Si la musique est déjà en cours de lecture, ne pas la redémarrer
+    if (backgroundMusic && !backgroundMusic.paused) {
+        return;
     }
     
     // Jouer une musique aléatoire
@@ -1685,6 +1707,7 @@ function setupControls() {
             case 'f': resetCar(); break;
             case 'm': toggleKeyboardMode(); break;
             case 'l': toggleLanguageMode(); break;
+            case 'n': nextMusic(); break; // Passer à la musique suivante
         }
         
         // Dans Rocket League, Q/D (ou A/D) font aussi tourner
@@ -1870,9 +1893,9 @@ function updateControlsDisplay() {
                     <p><strong>Shift</strong> : Boost</p>
                     <p><strong>R</strong> : Réinitialiser la balle</p>
                     <p><strong>F</strong> : Réinitialiser la voiture</p>
-                    <p><strong>M</strong> : Basculer en mode américain (WASD)</p>
-                    <p><strong>Shift</strong> : Saut / double saut</p>
+                    <p><strong>M</strong> : Basculer en mode QWERTY (WASD)</p>
                     <p><strong>L</strong> : Changer la langue (FR / EN)</p>
+                    <p><strong>N</strong> : Musique suivante</p>
                     <p><strong>ESC</strong> : Ouvrir/Fermer le menu</p>
                 `;
             } else {
@@ -1886,8 +1909,8 @@ function updateControlsDisplay() {
                     <p><strong>R</strong> : Reset ball</p>
                     <p><strong>F</strong> : Reset car</p>
                     <p><strong>M</strong> : Toggle keyboard mode (WASD)</p>
-                    <p><strong>Shift</strong> : Jump / double jump</p>
                     <p><strong>L</strong> : Change language (FR / EN)</p>
+                    <p><strong>N</strong> : Next music</p>
                     <p><strong>ESC</strong> : Open/Close menu</p>
                 `;
             }
@@ -1903,8 +1926,8 @@ function updateControlsDisplay() {
                     <p><strong>R</strong> : Réinitialiser la balle</p>
                     <p><strong>F</strong> : Réinitialiser la voiture</p>
                     <p><strong>M</strong> : Basculer en mode AZERTY (ZQSD)</p>
-                    <p><strong>Shift</strong> : Saut / double saut</p>
                     <p><strong>L</strong> : Changer la langue (FR / EN)</p>
+                    <p><strong>N</strong> : Musique suivante</p>
                     <p><strong>ESC</strong> : Ouvrir/Fermer le menu</p>
                 `;
             } else {
@@ -1918,8 +1941,8 @@ function updateControlsDisplay() {
                     <p><strong>R</strong> : Reset ball</p>
                     <p><strong>F</strong> : Reset car</p>
                     <p><strong>M</strong> : Toggle keyboard mode (ZQSD)</p>
-                    <p><strong>Shift</strong> : Jump / double jump</p>
                     <p><strong>L</strong> : Change language (FR / EN)</p>
+                    <p><strong>N</strong> : Next music</p>
                     <p><strong>ESC</strong> : Open/Close menu</p>
                 `;
             }
@@ -3519,5 +3542,23 @@ function setupLanding() {
             carPreviewRenderer.setSize(width, height);
         }
     });
+    
+    // Démarrer la musique au premier clic ou touche sur la landing page
+    let musicStartedOnLanding = false;
+    const startMusicOnLanding = () => {
+        if (musicStartedOnLanding) return;
+        musicStartedOnLanding = true;
+        startBackgroundMusic();
+    };
+    
+    // Écouter les clics et touches sur la landing page
+    landing.addEventListener('click', startMusicOnLanding, { once: true });
+    landing.addEventListener('touchstart', startMusicOnLanding, { once: true });
+    document.addEventListener('keydown', (e) => {
+        // Démarrer la musique au premier appui de touche si on est sur la landing
+        if (document.body.classList.contains('landing-active')) {
+            startMusicOnLanding();
+        }
+    }, { once: true });
 }
 
