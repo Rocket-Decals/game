@@ -92,6 +92,8 @@ let lastEngineSpeed = 0;
 let audioStarted = false;
 let isMuted = false;
 let savedVolume = 100; // Volume sauvegardé (0-100)
+let savedVolumeBeforeMute = 100; // Volume sauvegardé avant le mute
+let savedMusicVolumeBeforeMute = 40; // Volume musique sauvegardé avant le mute
 
 // --- Système de musique de fond ---
 let backgroundMusic = null;
@@ -165,6 +167,23 @@ function loadPreferences() {
         musicVolume = savedMusicVolume / 100;
     }
     
+    // Volumes sauvegardés avant le mute (pour restauration après dé-mute)
+    const savedVolumeBeforeMutePref = localStorage.getItem('volumeBeforeMute');
+    if (savedVolumeBeforeMutePref !== null) {
+        savedVolumeBeforeMute = parseInt(savedVolumeBeforeMutePref);
+    } else {
+        // Si pas de valeur sauvegardée, utiliser la valeur actuelle du volume
+        savedVolumeBeforeMute = savedVolume > 0 ? savedVolume : 50;
+    }
+    
+    const savedMusicVolumeBeforeMutePref = localStorage.getItem('musicVolumeBeforeMute');
+    if (savedMusicVolumeBeforeMutePref !== null) {
+        savedMusicVolumeBeforeMute = parseInt(savedMusicVolumeBeforeMutePref);
+    } else {
+        // Si pas de valeur sauvegardée, utiliser la valeur actuelle du volume musique
+        savedMusicVolumeBeforeMute = savedMusicVolume > 0 ? savedMusicVolume : 40;
+    }
+    
     // Mode clavier
     const savedKeyboardMode = localStorage.getItem('keyboardMode');
     if (savedKeyboardMode !== null) {
@@ -189,6 +208,8 @@ function savePreferences() {
     localStorage.setItem('gameVolume', savedVolume.toString());
     localStorage.setItem('gameMuted', isMuted.toString());
     localStorage.setItem('musicVolume', savedMusicVolume.toString());
+    localStorage.setItem('volumeBeforeMute', savedVolumeBeforeMute.toString());
+    localStorage.setItem('musicVolumeBeforeMute', savedMusicVolumeBeforeMute.toString());
     localStorage.setItem('keyboardMode', keyboardMode.toString());
     localStorage.setItem('languageMode', languageMode);
     localStorage.setItem('carModel', selectedCarModel);
@@ -203,8 +224,16 @@ function initAudio() {
         // Charger toutes les préférences sauvegardées
         loadPreferences();
         
-        // Appliquer le volume initial
-        updateVolume(savedVolume);
+        // Appliquer le volume initial (si on est en mode mute, le volume sera à 0)
+        if (isMuted) {
+            // Si on est en mode mute, mettre les volumes à 0 mais garder les valeurs sauvegardées
+            updateVolume(0);
+            updateMusicVolume(0);
+        } else {
+            // Sinon, appliquer les volumes sauvegardés
+            updateVolume(savedVolume);
+            updateMusicVolume(savedMusicVolume);
+        }
         
         masterGainNode.connect(audioContext.destination);
         
@@ -413,15 +442,25 @@ function setupAudioControls() {
     
     if (!volumeSlider || !volumeValue || !muteBtn) return;
     
-    // Initialiser le slider avec la valeur sauvegardée
-    volumeSlider.value = savedVolume;
-    volumeValue.textContent = savedVolume + '%';
+    // Initialiser le slider avec la valeur appropriée (0 si mute, sinon valeur sauvegardée)
+    if (isMuted) {
+        volumeSlider.value = 0;
+        volumeValue.textContent = '0%';
+    } else {
+        volumeSlider.value = savedVolume;
+        volumeValue.textContent = savedVolume + '%';
+    }
     updateMuteButton();
     
     // Initialiser le slider musique
     if (musicVolumeSlider && musicVolumeValue) {
-        musicVolumeSlider.value = savedMusicVolume;
-        musicVolumeValue.textContent = savedMusicVolume + '%';
+        if (isMuted) {
+            musicVolumeSlider.value = 0;
+            musicVolumeValue.textContent = '0%';
+        } else {
+            musicVolumeSlider.value = savedMusicVolume;
+            musicVolumeValue.textContent = savedMusicVolume + '%';
+        }
         
         // Gérer le changement de volume musique
         musicVolumeSlider.addEventListener('input', (e) => {
@@ -469,36 +508,77 @@ function updateVolume(volume) {
 function toggleMute() {
     const volumeSlider = document.getElementById('volumeSlider');
     const volumeValue = document.getElementById('volumeValue');
+    const musicVolumeSlider = document.getElementById('musicVolumeSlider');
+    const musicVolumeValue = document.getElementById('musicVolumeValue');
     
     isMuted = !isMuted;
     
     if (isMuted) {
         // Sauvegarder le volume actuel du slider avant de muter
         if (volumeSlider) {
-            savedVolume = parseInt(volumeSlider.value);
-            // Si le volume est déjà à 0, utiliser une valeur par défaut
-            if (savedVolume === 0) {
-                savedVolume = 50; // Valeur par défaut
+            const currentVolume = parseInt(volumeSlider.value);
+            // Sauvegarder la valeur actuelle (même si elle est à 0, on la garde)
+            savedVolumeBeforeMute = currentVolume > 0 ? currentVolume : savedVolume;
+            // Si la valeur sauvegardée est toujours 0, utiliser une valeur par défaut
+            if (savedVolumeBeforeMute === 0) {
+                savedVolumeBeforeMute = 50; // Valeur par défaut
             }
+        } else {
+            // Si le slider n'existe pas, utiliser la valeur actuelle sauvegardée
+            savedVolumeBeforeMute = savedVolume > 0 ? savedVolume : 50;
         }
+        
+        // Sauvegarder le volume de la musique avant de muter
+        if (musicVolumeSlider) {
+            const currentMusicVolume = parseInt(musicVolumeSlider.value);
+            savedMusicVolumeBeforeMute = currentMusicVolume > 0 ? currentMusicVolume : savedMusicVolume;
+            // Si le volume musique est déjà à 0, utiliser une valeur par défaut
+            if (savedMusicVolumeBeforeMute === 0) {
+                savedMusicVolumeBeforeMute = 40; // Valeur par défaut
+            }
+        } else {
+            // Si le slider n'existe pas, utiliser la valeur actuelle sauvegardée
+            savedMusicVolumeBeforeMute = savedMusicVolume > 0 ? savedMusicVolume : 40;
+        }
+        
+        // Muter le volume général
         updateVolume(0);
-        // Mettre à jour le slider visuellement
+        // Muter la musique
+        updateMusicVolume(0);
+        
+        // Mettre à jour les sliders visuellement
         if (volumeSlider) {
             volumeSlider.value = 0;
         }
         if (volumeValue) {
             volumeValue.textContent = '0%';
         }
+        if (musicVolumeSlider) {
+            musicVolumeSlider.value = 0;
+        }
+        if (musicVolumeValue) {
+            musicVolumeValue.textContent = '0%';
+        }
     } else {
-        // Restaurer le volume sauvegardé (ou valeur par défaut si 0)
-        const volumeToRestore = savedVolume > 0 ? savedVolume : 50;
+        // Restaurer le volume sauvegardé avant le mute
+        const volumeToRestore = savedVolumeBeforeMute > 0 ? savedVolumeBeforeMute : 50;
         updateVolume(volumeToRestore);
-        // Mettre à jour le slider
+        // Restaurer le volume de la musique sauvegardé
+        const musicVolumeToRestore = savedMusicVolumeBeforeMute > 0 ? savedMusicVolumeBeforeMute : 40;
+        updateMusicVolume(musicVolumeToRestore);
+        
+        // Mettre à jour les sliders
         if (volumeSlider) {
             volumeSlider.value = volumeToRestore;
         }
         if (volumeValue) {
             volumeValue.textContent = volumeToRestore + '%';
+        }
+        if (musicVolumeSlider) {
+            musicVolumeSlider.value = musicVolumeToRestore;
+        }
+        if (musicVolumeValue) {
+            musicVolumeValue.textContent = musicVolumeToRestore + '%';
         }
     }
     
