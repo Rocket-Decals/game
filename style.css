@@ -1,0 +1,727 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: #000;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Boutons en haut à gauche */
+.top-buttons {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Bouton menu */
+.menu-btn {
+    padding: 10px 18px;
+    font-size: 0.95rem;
+    background: linear-gradient(135deg, #141726, #222a4b);
+    color: white;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.menu-btn:hover {
+    background: linear-gradient(135deg, #1b2036, #2f3a68);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.75);
+}
+
+/* Bouton mute */
+.mute-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    font-size: 1.2rem;
+    background: linear-gradient(135deg, #141726, #222a4b);
+    color: white;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mute-btn:hover {
+    background: linear-gradient(135deg, #1b2036, #2f3a68);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.75);
+}
+
+.mute-btn.muted {
+    opacity: 0.6;
+    background: linear-gradient(135deg, #2a1f1f, #4a2a2a);
+}
+
+.mute-btn.muted:hover {
+    background: linear-gradient(135deg, #3a2f2f, #5a3a3a);
+}
+
+/* Menu latéral */
+.menu {
+    position: fixed;
+    top: 0;
+    left: -400px;
+    width: 400px;
+    height: 100vh;
+    background: radial-gradient(circle at top left, #202544 0, #070814 55%, #050612 100%);
+    box-shadow: 2px 0 30px rgba(0, 0, 0, 0.8);
+    z-index: 1002; /* Plus élevé que le bouton menu */
+    transition: left 0.3s ease;
+    overflow-y: auto;
+}
+
+.menu.open {
+    left: 0;
+}
+
+.menu-header {
+    background: linear-gradient(135deg, #15182b 0%, #262f55 60%, #3b4a86 100%);
+    color: white;
+    padding: 18px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-header h2 {
+    font-size: 1.2rem;
+    margin: 0;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.close-btn {
+    background: transparent;
+    color: white;
+    border: transparent;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px; /* cercle bien rond */
+    font-size: 1.3em;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    border: transparent;
+    transform: rotate(90deg);
+}
+
+.menu-content {
+    padding: 18px 20px 24px;
+    color: #e0e4ff;
+}
+
+.control-section {
+    margin-bottom: 22px;
+    padding: 16px 16px 14px;
+    background: rgba(9, 11, 24, 0.95);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.control-section h3 {
+    color: #f5f6ff;
+    margin-bottom: 10px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    padding-bottom: 6px;
+}
+
+.control-section p {
+    color: #a7b0d8;
+    font-size: 0.92rem;
+    margin: 5px 0;
+    line-height: 1.6;
+}
+
+.control-section strong {
+    color: #ffce57;
+    font-weight: bold;
+}
+
+.audio-section {
+    margin-bottom: 22px;
+    padding: 16px 16px 14px;
+    background: rgba(9, 11, 24, 0.95);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.audio-section h3 {
+    color: #f5f6ff;
+    margin-bottom: 12px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    padding-bottom: 6px;
+}
+
+.audio-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.volume-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #a7b0d8;
+    font-size: 0.92rem;
+}
+
+.volume-label span:first-child {
+    font-weight: 600;
+    color: #f5f6ff;
+}
+
+#volumeValue {
+    color: #ffce57;
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+
+.volume-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffce57, #ffaa00);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    transition: all 0.2s;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 3px 8px rgba(255, 206, 87, 0.5);
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffce57, #ffaa00);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    transition: all 0.2s;
+}
+
+.volume-slider::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 3px 8px rgba(255, 206, 87, 0.5);
+}
+
+.stats {
+    padding: 16px 16px 10px;
+    background: linear-gradient(150deg, #181c33 0%, #222a4b 40%, #3b4a86 100%);
+    border-radius: 10px;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-label {
+    font-weight: bold;
+    opacity: 0.85;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+#speed, #boost, #goals {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ffce57;
+}
+
+/* HUD en jeu façon Rocket League */
+.hud {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Masquer le HUD quand on est sur la landing */
+body.landing-active .hud {
+    display: none;
+}
+
+/* Score en haut au centre */
+.hud-top-center {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(10, 12, 28, 0.9), rgba(19, 26, 56, 0.95));
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.hud-goals-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    opacity: 0.7;
+    text-transform: uppercase;
+}
+
+.hud-goals-value {
+    font-size: 1.9rem;
+    font-weight: bold;
+    color: #ffce57;
+}
+
+.hud-timer {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+/* Musique en haut à droite */
+.hud-music {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(10, 12, 28, 0.9), rgba(19, 26, 56, 0.95));
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+    max-width: 300px;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.hud-music.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.hud-music-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.hud-music-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.hud-music-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ffce57;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hud-music-artist {
+    font-size: 0.7rem;
+    opacity: 0.7;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Bas de l'écran : vitesse au centre, boost à droite */
+.hud-bottom {
+    position: absolute;
+    bottom: 28px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 0 40px;
+}
+
+/* Vitesse au centre bas */
+.hud-speed-container {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 10px 20px 8px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(9, 11, 24, 0.9), rgba(27, 33, 70, 0.95));
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.hud-speed-value {
+    font-size: 3rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.hud-speed-unit {
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+/* Boost en bas à droite sous forme de rond */
+.hud-boost-container {
+    position: absolute;
+    right: 40px;
+    bottom: 2px;
+}
+
+.hud-boost-circle {
+    width: 115px;
+    height: 115px;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    box-shadow:
+        0 0 18px rgba(0, 0, 0, 0.9),
+        0 0 28px rgba(255, 153, 0, 0.6);
+    background:
+        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.35), rgba(0, 0, 0, 0.94)),
+        conic-gradient(from -90deg, #ffb347, #ff7300, #ffcf4a, #ffb347);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
+}
+
+.hud-boost-value {
+    font-size: 2.1rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.hud-boost-unit {
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    margin-top: 4px;
+    opacity: 0.9;
+}
+
+/* Message GOAL au centre de l'écran */
+.goal-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    font-weight: bold;
+    color: #ffdd55;
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    padding: 20px 40px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.goal-message.visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+}
+
+/* Container du jeu en plein écran */
+#gameContainer {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #1a1a1a;
+}
+
+#gameContainer canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Landing page façon menu Rocket League */
+.landing {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 40px 60px;
+    pointer-events: auto;
+    /* Fond moins opaque pour mieux voir la scène derrière */
+    background: radial-gradient(circle at top, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7));
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.landing.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.landing-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    color: #ffffff;
+}
+
+.landing-title-main {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
+}
+
+.landing-title-sub {
+    font-size: 1.1rem;
+    opacity: 0.85;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+/* Sélecteur de voiture */
+.car-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.car-nav-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.4);
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    line-height: 1;
+    padding: 0;
+}
+
+.car-nav-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.1);
+}
+
+.car-nav-btn:active {
+    transform: scale(0.95);
+}
+
+.car-preview-container {
+    position: relative;
+    width: 200px;
+    height: 150px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+#carPreviewCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.car-name {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 4px 12px;
+    border-radius: 4px;
+}
+
+.landing-play-btn {
+    margin-top: 6px;
+    padding: 12px 32px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    color: #0b0c16;
+    background: linear-gradient(135deg, #ffce57, #ff9500);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.85);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.landing-play-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.95);
+    background: linear-gradient(135deg, #ffd978, #ffae33);
+}
+
+/* Bouton retour à l'accueil */
+.back-to-landing-btn {
+    width: 100%;
+    padding: 14px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(255, 206, 87, 0.2), rgba(255, 149, 0, 0.2));
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.back-to-landing-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 206, 87, 0.4), rgba(255, 149, 0, 0.4));
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.back-to-landing-btn:active {
+    transform: translateY(0);
+}
+
+/* Overlay sombre quand le menu est ouvert */
+body.menu-open::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .menu {
+        width: 100%;
+        left: -100%;
+    }
+
+    /* HUD plus compact mais même logique de placement */
+    .hud-top-center {
+        top: 12px;
+    }
+
+    .hud-goals-value {
+        font-size: 1.8rem;
+    }
+
+    .hud-bottom {
+        bottom: 20px;
+        padding: 0 16px;
+    }
+
+    .hud-speed-value {
+        font-size: 2.4rem;
+    }
+
+    .hud-boost-circle {
+        width: 90px;
+        height: 90px;
+        border-width: 4px;
+    }
+
+    .hud-boost-value {
+        font-size: 1.8rem;
+    }
+}

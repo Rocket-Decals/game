@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocket Decals Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Boutons en haut à gauche -->
+    <div class="top-buttons">
+        <button id="muteBtn" class="mute-btn" title="Mute/Unmute">🔊</button>
+        <button id="menuBtn" class="menu-btn">☰ Menu</button>
+    </div>
+    
+    <!-- Menu latéral -->
+    <div id="menu" class="menu">
+        <div class="menu-header">
+            <h2>Rocket Decals Game</h2>
+            <button id="closeMenuBtn" class="close-btn">×</button>
+        </div>
+        
+        <div class="menu-content">
+            <div class="menu-actions" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                <button id="backToLandingBtn" class="back-to-landing-btn">🏠 Retour à l'accueil</button>
+            </div>
+            
+            <div class="control-section">
+                <h3>Contrôles</h3>
+                <div id="controls-text">
+                    <p><strong>Z</strong> : Avancer</p>
+                    <p><strong>S</strong> : Reculer</p>
+                    <p><strong>Q</strong> : Tourner à gauche</p>
+                    <p><strong>D</strong> : Tourner à droite</p>
+                    <p><strong>Espace</strong> : Boost</p>
+                    <p><strong>R</strong> : Réinitialiser la balle</p>
+                    <p><strong>F</strong> : Réinitialiser la voiture</p>
+                    <p><strong>M</strong> : Basculer en mode américain (WASD)</p>
+                    <p><strong>ESC</strong> : Ouvrir/Fermer le menu</p>
+                </div>
+            </div>
+            
+            <div class="audio-section">
+                <h3>Audio</h3>
+                <div class="audio-controls">
+                    <label for="volumeSlider" class="volume-label">
+                        <span>Volume</span>
+                        <span id="volumeValue">100%</span>
+                    </label>
+                    <input type="range" id="volumeSlider" min="0" max="100" value="100" class="volume-slider">
+                </div>
+                <div class="audio-controls" style="margin-top: 15px;">
+                    <label for="musicVolumeSlider" class="volume-label">
+                        <span>Volume Musique</span>
+                        <span id="musicVolumeValue">40%</span>
+                    </label>
+                    <input type="range" id="musicVolumeSlider" min="0" max="100" value="40" class="volume-slider">
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">Mode clavier:</span>
+                    <span id="keyboard-mode">AZERTY (ZQSD)</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Buts marqués:</span>
+                    <span id="goals">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Vitesse:</span>
+                    <span id="speed">0</span> km/h
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Boost:</span>
+                    <span id="boost">100</span>%
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- HUD en jeu façon Rocket League -->
+    <div class="hud">
+        <!-- Score en haut au centre -->
+        <div class="hud-top-center">
+            <span id="hud-timer" class="hud-timer">05:00</span>
+            <span class="hud-goals-label">BUTS</span>
+            <span id="hud-goals" class="hud-goals-value">0</span>
+        </div>
+
+        <!-- Musique en haut à droite -->
+        <div class="hud-music">
+            <div class="hud-music-icon">🎵</div>
+            <div class="hud-music-info">
+                <div id="hud-music-title" class="hud-music-title">-</div>
+                <div id="hud-music-artist" class="hud-music-artist">-</div>
+            </div>
+        </div>
+
+        <!-- Bas de l'écran : vitesse au centre, boost à droite -->
+        <div class="hud-bottom">
+            <div class="hud-speed-container">
+                <span id="hud-speed" class="hud-speed-value">0</span>
+                <span class="hud-speed-unit">KM/H</span>
+            </div>
+
+            <div class="hud-boost-container">
+                <div class="hud-boost-circle">
+                    <span id="hud-boost" class="hud-boost-value">100</span>
+                    <span class="hud-boost-unit">BOOST</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Message de but -->
+    <div id="goalMessage" class="goal-message">BUT&nbsp;!</div>
+
+    <!-- Landing page façon menu Rocket League -->
+    <div id="landing" class="landing">
+        <div class="landing-inner">
+            
+            <!-- Sélecteur de voiture 
+            <div class="car-selector">
+                <button id="carPrevBtn" class="car-nav-btn">‹</button>
+                <div class="car-preview-container">
+                    <canvas id="carPreviewCanvas"></canvas>
+                    <div class="car-name" id="carName">FENNEC</div>
+                </div>
+                <button id="carNextBtn" class="car-nav-btn">›</button>
+            </div> -->
+
+            <div class="landing-title">
+                <span class="landing-title-main">Rocket Decals Game</span>
+                <span class="landing-title-sub">by Erlow</span>
+            </div>
+            
+            <div style="display: flex; flex-direction: row; gap: 12px; align-items: center; justify-content: center;">
+                <button id="matchBtn" class="landing-play-btn">MATCH</button>
+                <button id="freeplayBtn" class="landing-play-btn" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">FREEPLAY</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Container du jeu en plein écran -->
+    <div id="gameContainer"></div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="game3d.js"></script>
+</body>
+</html>
